@@ -1,6 +1,7 @@
 from dataclasses import KW_ONLY, dataclass, field
 from typing import TYPE_CHECKING
 
+import willow2_mod_menu.options_menu
 from mods_base import (
     BaseOption,
     BoolOption,
@@ -35,6 +36,8 @@ KEYBINDS_NAME = "$WillowMenu.MenuOptionDisplayNames.KeyBinds"
 KEYBINDS_DESC = "$WillowMenu.MenuOptionDisplayNames.KeyBindsDesc"
 RESET_KEYBINDS_NAME = "$WillowMenu.MenuOptionDisplayNames.ResetKeyBinds"
 RESET_KEYBINDS_DESC = "$WillowMenu.MenuOptionDisplayNames.ResetKeyBindsDesc"
+RESET_OPTIONS_NAME = "Reset Options"
+RESET_OPTIONS_DESCRIPTION = "Reset the options to their default value."
 
 DUMMY_ACTION = "DUMMY"
 
@@ -85,7 +88,25 @@ class ModOptionsDataProvider(OptionsDataProvider):
                 ),
             )
 
-        yield from self.mod.iter_display_options()
+        display_options = list(self.mod.iter_display_options())
+        yield from display_options
+
+        def reset_mod_options(_option: ButtonOption) -> None:
+            for mod_option in self.mod.options:
+                mod_option.reset()
+
+            if not willow2_mod_menu.options_menu.data_provider_stack:
+                return
+            if (the_list := willow2_mod_menu.options_menu.latest_list()) is None:
+                return
+            the_list.Refresh()
+
+        if self.any_value_option_visible(display_options):
+            yield ButtonOption(
+                RESET_OPTIONS_NAME,
+                description=RESET_OPTIONS_DESCRIPTION,
+                on_press=reset_mod_options,
+            )
 
     @staticmethod
     def any_keybind_visible(options: Sequence[BaseOption]) -> bool:
