@@ -13,6 +13,7 @@ from mods_base import (
     NestedOption,
     SliderOption,
     SpinnerOption,
+    ValueOption,
 )
 from willow2_mod_menu.options_menu import push_options
 
@@ -70,6 +71,33 @@ class OptionsDataProvider(DataProvider):
                 and OptionsDataProvider.any_option_visible(option.children)
             )
             or (not isinstance(option, KeybindOption) and not option.is_hidden)
+            for option in options
+        )
+
+    @staticmethod
+    def any_value_option_visible(options: Sequence[BaseOption]) -> bool:
+        """
+        Recursively checks if any value option in a sequence is visible.
+
+        Recurses into grouped options, but not nested ones. A grouped option which is not explicitly
+        hidden, but contains no visible children, does not count as visible.
+
+        Keybind options are always treated as hidden.
+
+        Args:
+            options: The list of options to check.
+        """
+        return any(
+            (
+                isinstance(option, GroupedOption)
+                and not option.is_hidden
+                and OptionsDataProvider.any_option_visible(option.children)
+            )
+            or (
+                not isinstance(option, KeybindOption)
+                and isinstance(option, ValueOption)
+                and not option.is_hidden
+            )
             for option in options
         )
 
