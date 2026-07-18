@@ -101,7 +101,7 @@ class ModOptionsDataProvider(OptionsDataProvider):
                 return
             the_list.Refresh()
 
-        if self.any_value_option_visible(display_options):
+        if self.has_value_options(display_options):
             yield ButtonOption(
                 RESET_OPTIONS_NAME,
                 description=RESET_OPTIONS_DESCRIPTION,
