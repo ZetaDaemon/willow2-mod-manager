@@ -37,7 +37,7 @@ KEYBINDS_DESC = "$WillowMenu.MenuOptionDisplayNames.KeyBindsDesc"
 RESET_KEYBINDS_NAME = "$WillowMenu.MenuOptionDisplayNames.ResetKeyBinds"
 RESET_KEYBINDS_DESC = "$WillowMenu.MenuOptionDisplayNames.ResetKeyBindsDesc"
 RESET_OPTIONS_NAME = "Reset Options"
-RESET_OPTIONS_DESCRIPTION = "Reset the options to their default value."
+RESET_OPTIONS_DESCRIPTION = "Revert the options to their default settings."
 
 DUMMY_ACTION = "DUMMY"
 
