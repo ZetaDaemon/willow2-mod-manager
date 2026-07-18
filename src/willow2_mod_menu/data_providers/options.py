@@ -77,7 +77,7 @@ class OptionsDataProvider(DataProvider):
     @staticmethod
     def any_value_option_visible(options: Sequence[BaseOption]) -> bool:
         """
-        Recursively checks if any value option in a sequence is visible.
+        Recursively checks if any ValueOption in a sequence is visible.
 
         Recurses into grouped options, but not nested ones. A grouped option which is not explicitly
         hidden, but contains no visible children, does not count as visible.
@@ -91,12 +91,39 @@ class OptionsDataProvider(DataProvider):
             (
                 isinstance(option, GroupedOption)
                 and not option.is_hidden
-                and OptionsDataProvider.any_option_visible(option.children)
+                and OptionsDataProvider.any_value_option_visible(option.children)
             )
             or (
                 not isinstance(option, KeybindOption)
                 and isinstance(option, ValueOption)
                 and not option.is_hidden
+            )
+            for option in options
+        )
+
+    @staticmethod
+    def has_value_options(options: Sequence[BaseOption], ignore_hidden: bool = True) -> bool:
+        """
+        Recursively checks if there are any ValueOptions.
+
+        Recurses into grouped and nested options.
+
+        Keybind options are not treated as ValueOptions.
+
+        Args:
+            options: The list of options to check.
+            ignore_hidden: Should hidden options be ignored.
+        """
+        return any(
+            (
+                isinstance(option, (GroupedOption, NestedOption))
+                and not option.is_hidden
+                and OptionsDataProvider.has_value_options(option.children)
+            )
+            or (
+                not isinstance(option, KeybindOption)
+                and isinstance(option, ValueOption)
+                and not(option.is_hidden and ignore_hidden)
             )
             for option in options
         )
