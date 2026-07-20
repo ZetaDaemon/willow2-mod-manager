@@ -91,22 +91,23 @@ class ModOptionsDataProvider(OptionsDataProvider):
         display_options = list(self.mod.iter_display_options())
         yield from display_options
 
-        def reset_mod_options(_option: ButtonOption) -> None:
-            for mod_option in self.mod.options:
-                mod_option.reset()
-
-            if not willow2_mod_menu.options_menu.data_provider_stack:
-                return
-            if (the_list := willow2_mod_menu.options_menu.latest_list()) is None:
-                return
-            the_list.Refresh()
-
         if self.has_value_options(display_options):
             yield ButtonOption(
                 RESET_OPTIONS_NAME,
                 description=RESET_OPTIONS_DESCRIPTION,
-                on_press=reset_mod_options,
+                on_press=lambda _: self._reset_mod_options(),
             )
+
+    def _reset_mod_options(self) -> None:
+        for mod_option in self.mod.options:
+            mod_option.reset()
+
+        # Circular imports are avoided by only importing the module.
+        if not willow2_mod_menu.options_menu.data_provider_stack:
+            return
+        if (the_list := willow2_mod_menu.options_menu.latest_list()) is None:
+            return
+        the_list.Refresh()
 
     @staticmethod
     def any_keybind_visible(options: Sequence[BaseOption]) -> bool:
